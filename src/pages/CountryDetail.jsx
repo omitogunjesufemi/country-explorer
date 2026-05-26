@@ -30,6 +30,8 @@ export default function CountryDetail() {
     const unemploymentUrl = country?.cca3 ? `https://api.worldbank.org/v2/country/${country.cca3}/indicators/SL.UEM.TOTL.NE.ZS?format=json&per_page=100` : null;
     const { data: unemployment, loading: unemploymentLoading, error: unemploymentError } = useFetch(() => unemploymentUrl ? fetchCountryIncomeInfo(unemploymentUrl) : Promise.resolve(null));
 
+    console.log("Country data", country);
+    
     const { summary, loading: summaryLoading, error: summaryError } = useCountrySummary(country);
     console.log(summary);
     const { articles, loading: newsLoading, error: newsError } = useCountryNews(country?.name.common);

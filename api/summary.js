@@ -1,9 +1,11 @@
 import { formatLanguages, formatCurrencies, formatCapital, formatPopulation } from "../src/utils/formatter.js";
+import { config } from "dotenv";
 
 
 export default async function handler(req, res) {
+    config();
     if (req.method !== "POST") {
-        return res.status(405).json({ error: "Method not allowed" });
+        return res.status(405).json({ error: "You tried a method not allowed" });
     }
 
     try {
@@ -12,6 +14,8 @@ export default async function handler(req, res) {
         if (!country) {
             return res.status(400).json({ error: "Country data is required" });
         }
+
+        console.log("Generating summary for", country.name.common);
 
         const prompt = `
         You are a knowledgeable historian and travel writer. Write an engaging and informative 
@@ -31,8 +35,14 @@ export default async function handler(req, res) {
         travel & education app. Do not use bullet points — use flowing paragraphs only.
             `.trim();
 
+
         const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+
+        console.log(process.env);
+
         const token = process.env.GEMINI_API_KEY;
+
+        console.log("Token: ", token ? `Present ${token}` : `Missing ${token}`);
 
         const requestOptions = {
             method: "POST",
@@ -51,21 +61,21 @@ export default async function handler(req, res) {
                             ]
                         }
                     ],
-                    "tools": [
-                        {
-                            "google_search": {}
-                        }
-                    ]
                 }
             )
         }
         const urlRes = await fetch(apiUrl, requestOptions);
-        const data = await urlRes.json();
+
+        console.log("Gemini API response status", urlRes.status);
 
         if (!urlRes.ok) {
-            console.error("Gemini API error", JSON.stringify(data, null, 2));
+            console.error("Gemini API error", JSON.stringify(await urlRes.text()));
             return res.status(500).json({ error: "Failed to fetch summary from Gemini" });
         }
+
+        const data = await urlRes.json();
+
+        console.log(data);
 
         const candidate = data?.candidates?.[0];
         const content = candidate?.content;

@@ -27,14 +27,15 @@ export default function useCountrySummary(country) {
     useEffect(() => {
         if (!country) return;
 
+        console.log("Fetching summary for country", country.name.common);
+
         const cached = getCached(country.cca3);
-        if (cached || cached !== undefined || cached !== null) {
+        if (cached) {
             setSummary(cached);
             setLoading(false);
             return;
         }
 
-        let cancelled = false;
         setLoading(true);
         setSummary(null);
         setError(null);
@@ -42,21 +43,16 @@ export default function useCountrySummary(country) {
         const fetchSummary = async () => {
             try {
                 const summary = await fetchCountrySummary(country);
-                if (!cancelled) {
                     setSummary(summary);
                     setCached(country.cca3, summary);
                     setLoading(false);
-                }
             } catch (error) {
-                if (!cancelled) {
                     setError("Failed to fetch summary");
                     setLoading(false);
-                }
             }
         };
         fetchSummary();
 
-        return () => { cancelled = true; };
     }, [country?.cca3]);
 
     return { summary, loading, error };

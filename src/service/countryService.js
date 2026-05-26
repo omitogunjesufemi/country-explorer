@@ -43,6 +43,7 @@ export async function fetchCountrySummary(countryData) {
         const response =  await fetch("/api/summary", headerOptions);
         const data = await response.json();
         return data.summary;
+        console.log("Summary API response", data);
     } catch (error) {
         throw error;
     }
