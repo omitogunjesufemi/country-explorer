@@ -1,6 +1,6 @@
 export async function fetchAllCountries() {
     try {
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        // await new Promise(resolve => setTimeout(resolve, 5000));
         const response = await fetch(`https://restcountries.com/v3.1/all?fields=name,capital,flags,region,population,cca3`);
         return response.json();
     } catch (error) {
