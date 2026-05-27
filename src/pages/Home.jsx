@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import CountryCard from "../components/CountryCard";
+import PendingCountryCard from "../components/PendingCountryCard";
 import useFetch from "../hooks/useFetch";
 import { fetchAllCountries } from "../service/countryService";
 import Spinner from "../components/Spinner";
@@ -58,8 +59,15 @@ export default function Home() {
 
             {/* Spinner */}
             {loading &&
-                <div className="flex gap-3 py-4 mt-8 mb-8 justify-center items-center">
-                    <Spinner label={"Loading Countries..."} />
+                // <div className="flex gap-3 py-4 mt-8 mb-8 justify-center items-center">
+                //     <Spinner label={"Loading Countries..."} />
+                // </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-10 m-auto place-items-center">
+                    {[1,2,3,4,5,6,7,8].map((id) => (
+                        <div className="w-full h-full" key={id}>
+                            <PendingCountryCard />
+                        </div>
+                    ))}
                 </div>
             }
 
