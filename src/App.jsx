@@ -6,7 +6,6 @@ import Layout from "./components/Layout";
 import FavouritesProvider from "./context/FavouritesContext";
 
 export default function App() {
-
   return (
     <FavouritesProvider>
       <BrowserRouter>
