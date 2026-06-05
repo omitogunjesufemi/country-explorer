@@ -4,6 +4,7 @@ import CountryDetail from "./pages/CountryDetail";
 import Favourites from "./pages/Favourites";
 import Layout from "./components/Layout";
 import FavouritesProvider from "./context/FavouritesContext";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/country/:id" element={<CountryDetail />} />
             <Route path="/favourites" element={<Favourites />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>
