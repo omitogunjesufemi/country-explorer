@@ -1,9 +1,13 @@
+
 export async function fetchAllCountries() {
+
   try {
     // await new Promise(resolve => setTimeout(resolve, 5000));
-    const response = await fetch(
-      `https://restcountries.com/v3.1/all?fields=name,capital,flags,region,population,cca3`,
-    );
+    const response = await fetch("/api/country");
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `Failed to fetch countries (${response.status})`);
+    }
     return response.json();
   } catch (error) {
     throw error;
@@ -12,10 +16,11 @@ export async function fetchAllCountries() {
 
 export async function fetchCountryByCode(countryCode) {
   try {
-    // await new Promise(resolve => setTimeout(resolve, 50000));
-    const response = await fetch(
-      `https://restcountries.com/v3.1/alpha/${countryCode}`,
-    );
+    const response = await fetch(`/api/country?code=${encodeURIComponent(countryCode)}`);
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `Failed to fetch country (${response.status})`);
+    }
     return response.json();
   } catch (error) {
     throw error;

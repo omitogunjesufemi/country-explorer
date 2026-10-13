@@ -42,8 +42,6 @@ export default async function handler(req, res) {
     const apiUrl =
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
 
-    console.log(process.env);
-
     const token = process.env.GEMINI_API_KEY;
 
     console.log("Token: ", token ? `Present ${token}` : `Missing ${token}`);

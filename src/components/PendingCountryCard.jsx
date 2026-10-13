@@ -16,12 +16,12 @@ export default function PendingCountryCard() {
 
       <div className="w-full mt-2 p-2">
         <div className="flex justify-between gap-2 mb-3">
-          <div class="h-10 w-3/4 bg-gray-200"></div>
-          <div class="h-10 w-1/4 bg-gray-200"></div>
+          <div className="h-10 w-3/4 bg-gray-200"></div>
+          <div className="h-10 w-1/4 bg-gray-200"></div>
         </div>
-        <div class="h-4 w-3/4 bg-gray-200 mb-3"></div>
-        <div class="h-4 w-3/4 bg-gray-200 mb-3"></div>
-        <div class="h-4 w-3/4 bg-gray-200"></div>
+        <div className="h-4 w-3/4 bg-gray-200 mb-3"></div>
+        <div className="h-4 w-3/4 bg-gray-200 mb-3"></div>
+        <div className="h-4 w-3/4 bg-gray-200"></div>
       </div>
     </div>
   );
