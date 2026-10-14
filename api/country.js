@@ -16,7 +16,6 @@ export default async function handler(req, res) {
 
         const { code } = req.query || {};
         let rawObjects = [];
-        let rawObjects = [];
 
         // Fetch single country by alpha-3 code if code is provided, otherwise fetch country list
         if (code) {
@@ -26,28 +25,15 @@ export default async function handler(req, res) {
 
                 };
             if (code) {
-                const endpoint = code
-                    ? `https://api.restcountries.com/countries/v5/codes.alpha_3/${encodeURIComponent(code)}`
-                    : {
-
-                    };
+                const endpoint = `https://api.restcountries.com/countries/v5/codes.alpha_3/${encodeURIComponent(code)}`;
 
                 const countryRes = await fetch(endpoint, {
                     headers: {
                         Authorization: `Bearer ${apiKey}`,
                     },
                 });
-                const countryRes = await fetch(endpoint, {
-                    headers: {
-                        Authorization: `Bearer ${apiKey}`,
-                    },
-                });
 
-                if (!countryRes.ok) {
-                    const errorText = await countryRes.text();
-                    console.error("REST Countries API Error:", countryRes.status, errorText);
-                    return res.status(countryRes.status).json({ error: "Failed to fetch from REST Countries API" });
-                }
+
                 if (!countryRes.ok) {
                     const errorText = await countryRes.text();
                     console.error("REST Countries API Error:", countryRes.status, errorText);
