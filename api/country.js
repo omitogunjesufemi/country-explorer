@@ -15,26 +15,43 @@ export default async function handler(req, res) {
         }
 
         const { code } = req.query || {};
+        let rawObjects = [];
 
         // Fetch single country by alpha-3 code if code is provided, otherwise fetch country list
-        const endpoint = code
-            ? `https://api.restcountries.com/countries/v5/codes.alpha_3/${encodeURIComponent(code)}`
-            : `https://api.restcountries.com/countries/v5?limit=100`;
+        if (code) {
+            const endpoint = code
+                ? `https://api.restcountries.com/countries/v5/codes.alpha_3/${encodeURIComponent(code)}`
+                : {
 
-        const countryRes = await fetch(endpoint, {
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
-            },
-        });
+                };
 
-        if (!countryRes.ok) {
-            const errorText = await countryRes.text();
-            console.error("REST Countries API Error:", countryRes.status, errorText);
-            return res.status(countryRes.status).json({ error: "Failed to fetch from REST Countries API" });
+            const countryRes = await fetch(endpoint, {
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                },
+            });
+
+            if (!countryRes.ok) {
+                const errorText = await countryRes.text();
+                console.error("REST Countries API Error:", countryRes.status, errorText);
+                return res.status(countryRes.status).json({ error: "Failed to fetch from REST Countries API" });
+            }
+
+            const json = await countryRes.json();
+            rawObjects = json.data?.objects ?? [];
+        }
+        else {
+            const offsets = [0, 100, 200];
+            const responses = await Promise.all(
+                offsets.map((offset) => fetch(`https://api.restcountries.com/countries/v5?limit=100&offset=${offset}`, {
+                    headers: {
+                        Authorization: `Bearer ${apiKey}`,
+                    },
+                }).then((r) => r.json()))
+            );
+            rawObjects = responses.flatMap((r) => r.data?.objects ?? []);
         }
 
-        const json = await countryRes.json();
-        const rawObjects = json.data?.objects ?? [];
 
         const normalized = rawObjects.map((c) => ({
             ...c,
