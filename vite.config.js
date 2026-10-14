@@ -3,6 +3,7 @@ import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import { config } from "dotenv";
+import apiDevMiddleware from "./apiDevMiddleware";
 
 config();
 
@@ -12,5 +13,6 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
+    apiDevMiddleware(),
   ],
 });

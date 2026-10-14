@@ -42,7 +42,10 @@ export default function useCountrySummary(country) {
 
     const fetchSummary = async () => {
       try {
-        const summary = await fetchCountrySummary(country);
+        let summary = await fetchCountrySummary(country);
+        if (summary === null || summary === undefined)
+          summary = country.descriptions.long
+
         setSummary(summary);
         setCached(country.cca3, summary);
         setLoading(false);

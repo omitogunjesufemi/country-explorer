@@ -18,6 +18,7 @@ import {
   GlobeAmericasIcon,
   CalendarDaysIcon,
   TruckIcon,
+  CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
 import useCountrySummary from "../hooks/useCountrySummary";
 import useCountryNews from "../hooks/useCountryNews";
@@ -164,7 +165,7 @@ export default function CountryDetail() {
                     <LanguageIcon className="size-4 shrink-0 text-gray-400" />
                     <span>
                       <span className="font-medium">Languages:</span>{" "}
-                      {Object.values(country.languages).join(", ")}
+                      {Object.values(country.languages.map((c) => `${c.name} (${c.native_name})`)).join(", ")}
                     </span>
                   </p>
                 )}
@@ -191,7 +192,7 @@ export default function CountryDetail() {
               )}
 
               {/* Coat of Arms */}
-              {country.coatOfArms?.svg && (
+              {country?.coatOfArms?.svg && (
                 <div className="mt-10 flex flex-col items-center">
                   <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">
                     Coat of Arms
@@ -220,9 +221,7 @@ export default function CountryDetail() {
                     Could not load summary: {summaryError}
                   </p>
                 )}
-                {summary && (
-                  <SummaryTypeWriter text={summary}/>
-                )}
+                {summary && (<SummaryTypeWriter text={summary} />)}
               </section>
 
               {/* Economic LineChart */}
@@ -294,15 +293,15 @@ export default function CountryDetail() {
                   <DetailRow
                     label="Area"
                     value={
-                      country.area
-                        ? `${country.area.toLocaleString()} km²`
+                      country?.area
+                        ? `${country.area.kilometers.toLocaleString()} km²`
                         : null
                     }
                   />
                   <DetailRow
                     label="Landlocked"
                     value={
-                      country.landlocked !== undefined
+                      country?.landlocked !== undefined
                         ? country.landlocked
                           ? "Yes"
                           : "No"
@@ -312,10 +311,10 @@ export default function CountryDetail() {
                   <DetailRow
                     label="Driving Side"
                     value={
-                      country.car?.side
-                        ? country.car.side.charAt(0).toUpperCase() +
-                          country.car.side.slice(1) +
-                          " side"
+                      country?.cars?.driving_side
+                        ? country.cars.driving_side.charAt(0).toUpperCase() +
+                        country.cars.driving_side.slice(1) +
+                        " side"
                         : null
                     }
                   />
@@ -326,76 +325,82 @@ export default function CountryDetail() {
                   <DetailRow
                     label="Start of Week"
                     value={
-                      country.startOfWeek
+                      country?.startOfWeek
                         ? country.startOfWeek.charAt(0).toUpperCase() +
-                          country.startOfWeek.slice(1)
+                        country.startOfWeek.slice(1)
                         : null
                     }
                   />
                   <DetailRow
                     label="Calling Code"
                     value={
-                      country.idd?.root
-                        ? `${country.idd.root}${country.idd.suffixes?.[0] ?? ""}`
+                      country?.calling_code
+                        ? Object.values(country.calling_code).join(",")
                         : null
                     }
                   />
                   <DetailRow
                     label="Top-Level Domain"
-                    value={country.tld?.join(", ")}
+                    value={country.tlds?.join(", ")}
                   />
                   <DetailRow
                     label="Country Codes"
-                    value={[country.cca2, country.cca3, country.cioc]
+                    value={[country.codes.alpha_2, country.cca3, country.codes.cioc]
                       .filter(Boolean)
-                      .join(" / ")}
+                      .join(" , ")}
                   />
-                  <DetailRow label="FIFA Code" value={country.fifa} />
+                  <DetailRow label="FIFA Code" value={country.codes.fifa} />
                   <DetailRow
                     label="Gini Coefficient"
                     value={
-                      country.gini
-                        ? `${Object.values(country.gini)[0]} (${Object.keys(country.gini)[0]})`
+                      country.economy.gini_coefficient
+                        ? `${Object.values(country.economy.gini_coefficient)[0]} (${Object.keys(country.economy.gini_coefficient)[0]})`
                         : null
                     }
                   />
-                  <DetailRow label="Demonym" value={country.demonyms?.eng?.m} />
+                  <DetailRow
+                    label="Demonym"
+                    value={country.demonyms?.eng?.m}
+                  />
                   <DetailRow
                     label="Postal Code Format"
                     value={country.postalCode?.format}
                   />
                   <DetailRow
-                    label="UN Member"
+                    label="Membership"
                     value={
-                      country.unMember !== undefined
-                        ? country.unMember
-                          ? "Yes"
-                          : "No"
+                      country.memberships
+                        ? Object.entries(country.memberships)
+                          .filter(([org, isMember]) => isMember === true)
+                          .map(([org, isMember]) => isMember
+                            ? org.toUpperCase().split("_").join(" ")
+                            : null)
+                          .join(', ')
                         : null
                     }
                   />
                   <DetailRow
                     label="Independent"
                     value={
-                      country.independent !== undefined
-                        ? country.independent
-                          ? "Yes"
-                          : "No"
+                      country.classification.dependency !== undefined
+                        ? country.classification.dependency
+                          ? "No"
+                          : "Yes"
                         : null
                     }
                   />
                   <DetailRow
-                    label="Car Sign"
-                    value={country.car?.signs?.join(", ")}
+                    label="Government Type"
+                    value={country.government_type}
                   />
                 </div>
 
                 {/* Map links */}
-                {country.maps && (
+                {country.links && (
                   <div className="mt-4 flex gap-4">
-                    {country.maps.googleMaps && (
+                    {country.links.google_maps && (
                       <a
-                        href={country.maps.googleMaps}
+                        href={country.links.google_maps}
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
@@ -403,14 +408,24 @@ export default function CountryDetail() {
                         <MapIcon className="size-4" /> Google Maps
                       </a>
                     )}
-                    {country.maps.openStreetMaps && (
+                    {country.links.open_street_maps && (
                       <a
-                        href={country.maps.openStreetMaps}
+                        href={country.links.open_street_maps}
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
                       >
                         <GlobeAmericasIcon className="size-4" /> OpenStreetMap
+                      </a>
+                    )}
+                    {country.links.official && (
+                      <a
+                        href={country.links.official}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                      >
+                        <CheckBadgeIcon className="size-4" /> Official Website
                       </a>
                     )}
                   </div>
